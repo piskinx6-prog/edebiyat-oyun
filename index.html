@@ -5,160 +5,506 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Şair–Yazar Eşleştirme Oyunu</title>
   <style>
-    body{font-family:system-ui,Arial;margin:20px;max-width:760px}
-    button{padding:10px 12px;margin:6px 6px 6px 0}
-    .card{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    input{padding:10px;font-size:16px;width:120px}
-    pre{white-space:pre-wrap}
+    :root{
+      --bg:#0b1220;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(0,0,0,.18);
+      --text:#eaf0ff;
+      --muted:#b9c3dd;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:16px;
+
+      --good: rgba(70, 200, 140, .18);
+      --bad:  rgba(255, 110, 110, .18);
+      --accent: rgba(96,140,255,.65);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:
+        radial-gradient(1200px 800px at 10% 0%, rgba(90,120,255,.25), transparent 60%),
+        radial-gradient(900px 600px at 90% 20%, rgba(0,220,180,.16), transparent 55%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    .container{
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 10px;
+    }
+
+    h1{
+      margin:0;
+      font-size: 22px;
+      letter-spacing:.2px;
+    }
+    .subtitle{
+      margin-top:6px;
+      color:var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button{
+      -webkit-tap-highlight-color: transparent;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,.20);
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
+    button:active{ transform: translateY(0px); }
+
+    .primary{
+      background: linear-gradient(180deg, rgba(96,140,255,.65), rgba(96,140,255,.22));
+      border-color: rgba(96,140,255,.55);
+    }
+    .danger{
+      background: linear-gradient(180deg, rgba(255,110,110,.55), rgba(255,110,110,.18));
+      border-color: rgba(255,110,110,.45);
+    }
+
+    .card{
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .label{
+      font-weight: 800;
+      margin-bottom: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: var(--card2);
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .question{
+      margin:0;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 16px;
+      white-space: pre-wrap;
+    }
+
+    .choices{
+      margin-top: 12px;
+      display:grid;
+      gap:10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .choiceBtn{
+      text-align:left;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow: 0 10px 20px rgba(0,0,0,.22);
+      width: 100%;
+      min-height: 52px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .choiceKey{
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--border);
+      background: rgba(0,0,0,.16);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .choiceText{
+      line-height: 1.35;
+      margin-top: 2px;
+      font-weight: 650;
+    }
+
+    .choiceBtn:hover{ border-color: rgba(255,255,255,.22); transform: translateY(-1px); }
+    .choiceBtn:active{ transform: translateY(0px); }
+
+    .choiceBtn.correct{
+      background: linear-gradient(180deg, rgba(70,200,140,.22), rgba(70,200,140,.10));
+      border-color: rgba(70,200,140,.55);
+    }
+    .choiceBtn.wrong{
+      background: linear-gradient(180deg, rgba(255,110,110,.22), rgba(255,110,110,.10));
+      border-color: rgba(255,110,110,.55);
+    }
+
+    .resultBox{
+      margin-top: 10px;
+      border:1px solid var(--border);
+      background: var(--card2);
+      border-radius: 14px;
+      padding: 12px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .resultBox.good{ background: var(--good); border-color: rgba(70,200,140,.35); }
+    .resultBox.bad{ background: var(--bad); border-color: rgba(255,110,110,.35); }
+
+    .scorebar{
+      margin-top: 10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footerTips{
+      margin-top: 10px;
+      color: rgba(185,195,221,.9);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 640px){
+      h1{ font-size: 20px; }
+      .choices{ grid-template-columns: 1fr; }
+      .choiceBtn{ min-height: 54px; }
+    }
   </style>
 </head>
 <body>
-  <h2>Şair–Yazar Eşleştirme Oyunu (API’siz)</h2>
-
-  <div class="row">
-    <button id="start">Başlat</button>
-    <button id="next">Sonraki</button>
-    <button id="wrong">Yanlışları Tekrar</button>
-    <button id="reset">Sıfırla</button>
-  </div>
-
-  <div class="card">
-    <div><b>Soru:</b></div>
-    <pre id="q">Başlat’a bas.</pre>
-    <div id="choices"></div>
-  </div>
-
-  <div class="card">
-    <div class="row">
-      <input id="ans" placeholder="A/B/C/D" />
-      <button id="check">Kontrol Et</button>
+  <div class="container">
+    <div class="topbar">
+      <div>
+        <h1>Şair–Yazar Eşleştirme Oyunu</h1>
+        <div class="subtitle">TYT/AYT Edebiyat • Tek link • Dokunarak cevapla (klavye yok) • Mobil uyumlu</div>
+      </div>
+      <div class="pill" id="modePill">Mod: Tüm Sorular</div>
     </div>
-    <pre id="result"></pre>
-    <div><b>Skor:</b> <span id="score">0 doğru / 0 yanlış</span> | <b>Seri:</b> <span id="streak">0</span></div>
+
+    <div class="row">
+      <button id="start" class="primary">Başlat</button>
+      <button id="next">Sonraki</button>
+      <button id="hint">İpucu</button>
+      <button id="wrong">Yanlışları Tekrar</button>
+      <button id="reset" class="danger">Sıfırla</button>
+    </div>
+
+    <div class="card">
+      <div class="label">
+        <span>Soru</span>
+        <span class="pill" id="metaPill">—</span>
+      </div>
+      <p class="question" id="q">Başlat’a bas.</p>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <div class="card">
+      <div class="label">
+        <span>Sonuç</span>
+        <span class="pill" id="progressPill">0 / 0</span>
+      </div>
+      <div class="resultBox" id="result">Cevaplamak için şıklara dokun.</div>
+
+      <div class="scorebar">
+        <span class="pill">Doğru: <b id="cOk">0</b></span>
+        <span class="pill">Yanlış: <b id="cBad">0</b></span>
+        <span class="pill">Seri: <b id="cStreak">0</b></span>
+      </div>
+
+      <div class="footerTips">
+        • İpucu kullanırsan soru “yarım puan” sayılır.  • Yanlışları tekrar modu, yanlış yaptığın soruları döndürür.
+      </div>
+    </div>
   </div>
 
+  <!-- SORU BANKASI (API'siz) -->
   <script src="./questions.js"></script>
-  <script>
-    const LS_KEY = "edebiyat_game_v1";
-    let state = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
 
-    function initState(){
-      state = {
+  <script>
+    const LS_KEY = "edebiyat_game_v2";
+
+    const el = (id)=>document.getElementById(id);
+
+    let state = load() || freshState();
+    let current = null;       // soru objesi
+    let answered = false;     // aynı soruya 2 kez basılmasın
+    let hintUsed = false;
+
+    function freshState(){
+      return {
         correct: 0,
         wrong: 0,
         streak: 0,
-        currentId: null,
+        total: 0,
         wrongIds: [],
         mode: "all" // all | wrong
       };
-      save();
     }
 
-    function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    function load(){
+      try{
+        const raw = localStorage.getItem(LS_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){ return null; }
+    }
+
+    function save(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    function setModePill(){
+      el("modePill").textContent = state.mode === "wrong" ? "Mod: Yanlışları Tekrar" : "Mod: Tüm Sorular";
+    }
+
     function renderScore(){
-      document.getElementById("score").textContent = `${state.correct} doğru / ${state.wrong} yanlış`;
-      document.getElementById("streak").textContent = `${state.streak}`;
+      el("cOk").textContent = state.correct;
+      el("cBad").textContent = state.wrong;
+      el("cStreak").textContent = state.streak;
+      el("progressPill").textContent = `${state.correct + state.wrong} / ${state.total}`;
+      setModePill();
     }
 
-    function getPool(){
+    function pool(){
+      const all = window.QUESTIONS || [];
       if(state.mode === "wrong"){
-        const pool = window.QUESTIONS.filter(q => state.wrongIds.includes(q.id));
-        return pool.length ? pool : window.QUESTIONS;
+        const p = all.filter(q => state.wrongIds.includes(q.id));
+        return p.length ? p : all;
       }
-      return window.QUESTIONS;
+      return all;
     }
 
     function pickQuestion(){
-      const pool = getPool();
-      // Son soruyu tekrar seçmemek için basit filtre
-      const filtered = pool.filter(q => q.id !== state.currentId);
-      const finalPool = filtered.length ? filtered : pool;
+      const p = pool();
+      if(!p.length) return null;
+      // Son soru ile aynı olmasın:
+      const filtered = current ? p.filter(x => x.id !== current.id) : p;
+      const finalPool = filtered.length ? filtered : p;
       return finalPool[Math.floor(Math.random() * finalPool.length)];
     }
 
-    function showQuestion(q){
-      state.currentId = q.id; save();
-      document.getElementById("q").textContent = q.question;
-      const c = document.getElementById("choices");
-      c.innerHTML = "";
-      ["A","B","C","D"].forEach(k=>{
-        const div = document.createElement("div");
-        div.textContent = `${k}) ${q.choices[k]}`;
-        c.appendChild(div);
+    function resetChoiceStyles(){
+      const buttons = el("choices").querySelectorAll("button.choiceBtn");
+      buttons.forEach(b=>{
+        b.classList.remove("correct","wrong");
+        b.disabled = false;
       });
-      document.getElementById("ans").value = "";
-      document.getElementById("result").textContent = "";
+    }
+
+    function showQuestion(q){
+      current = q;
+      answered = false;
+      hintUsed = false;
+
+      el("q").textContent = q.question;
+
+      // meta pill: id + (varsa dönem bilgisi)
+      const period = q.period || q.tags?.period || "müfredat";
+      el("metaPill").textContent = `#${q.id} • ${period}`;
+
+      const c = el("choices");
+      c.innerHTML = "";
+
+      const keys = ["A","B","C","D"];
+      keys.forEach(k=>{
+        const btn = document.createElement("button");
+        btn.className = "choiceBtn";
+        btn.type = "button";
+        btn.setAttribute("data-key", k);
+        btn.onclick = ()=> choose(k);
+
+        const key = document.createElement("div");
+        key.className = "choiceKey";
+        key.textContent = k;
+
+        const text = document.createElement("div");
+        text.className = "choiceText";
+        text.textContent = q.choices[k];
+
+        btn.appendChild(key);
+        btn.appendChild(text);
+        c.appendChild(btn);
+      });
+
+      el("result").className = "resultBox";
+      el("result").textContent = "Cevaplamak için şıklara dokun.";
+
       renderScore();
     }
 
-    function currentQuestion(){
-      return window.QUESTIONS.find(q => q.id === state.currentId);
-    }
-
     function start(){
-      if(!state.correct && !state.wrong && !state.currentId) {
-        // yepyeni
-      }
+      state.mode = "all";
+      save();
       const q = pickQuestion();
+      if(!q){
+        el("result").className = "resultBox bad";
+        el("result").textContent = "Soru bankası boş. questions.js içine soru eklemelisin.";
+        return;
+      }
       showQuestion(q);
     }
 
     function next(){
       const q = pickQuestion();
+      if(!q) return;
       showQuestion(q);
     }
 
-    function check(){
-      const q = currentQuestion();
-      if(!q) return;
+    function addWrong(id){
+      if(!state.wrongIds.includes(id)) state.wrongIds.push(id);
+    }
 
-      const choice = document.getElementById("ans").value.trim().toUpperCase();
-      if(!["A","B","C","D"].includes(choice)){
-        document.getElementById("result").textContent = "A/B/C/D gir.";
-        return;
-      }
+    function lockChoices(){
+      const buttons = el("choices").querySelectorAll("button.choiceBtn");
+      buttons.forEach(b=> b.disabled = true);
+    }
 
-      if(choice === q.answer){
-        state.correct += 1;
+    function markChoice(key, cls){
+      const btn = el("choices").querySelector(`button.choiceBtn[data-key="${key}"]`);
+      if(btn) btn.classList.add(cls);
+    }
+
+    function choose(key){
+      if(!current) return;
+      if(answered) return;
+
+      answered = true;
+      lockChoices();
+
+      const correctKey = current.answer;
+      state.total = window.QUESTIONS?.length || state.total;
+
+      if(key === correctKey){
+        state.correct += hintUsed ? 0.5 : 1;
         state.streak += 1;
-        document.getElementById("result").textContent =
-          `✅ Doğru\nAçıklama: ${q.explain}\nMnemonik: ${q.mnemonic}`;
+
+        markChoice(key, "correct");
+
+        el("result").className = "resultBox good";
+        el("result").textContent =
+          `✅ Doğru\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`;
       } else {
         state.wrong += 1;
         state.streak = 0;
-        if(!state.wrongIds.includes(q.id)) state.wrongIds.push(q.id);
-        document.getElementById("result").textContent =
-          `❌ Yanlış\nDoğru: ${q.answer}) ${q.choices[q.answer]}\nAçıklama: ${q.explain}\nMnemonik: ${q.mnemonic}`;
+        addWrong(current.id);
+
+        markChoice(key, "wrong");
+        markChoice(correctKey, "correct");
+
+        el("result").className = "resultBox bad";
+        el("result").textContent =
+          `❌ Yanlış\nDoğru: ${correctKey}) ${current.choices[correctKey]}\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`;
       }
+
       save();
       renderScore();
     }
 
+    function hint(){
+      if(!current) return;
+      if(answered) return;
+
+      if(hintUsed){
+        el("result").className = "resultBox";
+        el("result").textContent = "İpucu zaten kullanıldı.";
+        return;
+      }
+      hintUsed = true;
+
+      // Basit ipucu: dönem bilgisi + iki yanlış şık "zıt" dönem gibi hissettiren açıklama yok, sadece meta
+      const period = current.period || current.tags?.period || "müfredat";
+      el("result").className = "resultBox";
+      el("result").textContent = `💡 İpucu: Dönem/Akım → ${period}\n(Not: Bu soru yarım puan sayılır.)`;
+    }
+
     function wrongMode(){
-      state.mode = "wrong"; save();
-      start();
-      document.getElementById("result").textContent = "Yanlışları tekrar moduna geçildi.";
+      state.mode = "wrong";
+      save();
+      const q = pickQuestion();
+      if(!q){
+        el("result").className = "resultBox bad";
+        el("result").textContent = "Yanlış soru yok (ya da soru bankası boş).";
+        return;
+      }
+      showQuestion(q);
     }
 
     function resetAll(){
       localStorage.removeItem(LS_KEY);
-      initState();
-      document.getElementById("q").textContent = "Başlat’a bas.";
-      document.getElementById("choices").innerHTML = "";
-      document.getElementById("result").textContent = "";
+      state = freshState();
+      current = null;
+      answered = false;
+      hintUsed = false;
+
+      el("q").textContent = "Başlat’a bas.";
+      el("choices").innerHTML = "";
+      el("metaPill").textContent = "—";
+      el("result").className = "resultBox";
+      el("result").textContent = "Cevaplamak için şıklara dokun.";
+
+      save();
       renderScore();
     }
 
     // init
-    if(!state || typeof state !== "object" || state.correct === undefined) initState();
+    if(!state || typeof state !== "object") state = freshState();
+    state.total = window.QUESTIONS?.length || state.total || 0;
+    save();
     renderScore();
+    setModePill();
 
-    document.getElementById("start").onclick = ()=>{ state.mode="all"; save(); start(); };
-    document.getElementById("next").onclick = next;
-    document.getElementById("check").onclick = check;
-    document.getElementById("wrong").onclick = wrongMode;
-    document.getElementById("reset").onclick = resetAll;
+    // buttons
+    el("start").onclick = start;
+    el("next").onclick = next;
+    el("hint").onclick = hint;
+    el("wrong").onclick = wrongMode;
+    el("reset").onclick = resetAll;
   </script>
 </body>
 </html>
