@@ -312,13 +312,18 @@
     }
 
     function pool(){
-      const all = window.QUESTIONS || [];
-      if(state.mode === "wrong"){
-        const p = all.filter(q => state.wrongIds.includes(q.id));
-        return p.length ? p : all;
-      }
-      return all;
-    }
+  const all = window.QUESTIONS || [];
+
+  if(state.mode === "wrong"){
+    return all.filter(q => state.wrongIds.includes(q.id));
+  }
+
+  if(state.mode !== "all"){
+    return all.filter(q => q.period === state.mode);
+  }
+
+  return all;
+}
 
     function pickQuestion(){
       const p = pool();
@@ -511,4 +516,5 @@
   </script>
 </body>
 </html>
+
 
