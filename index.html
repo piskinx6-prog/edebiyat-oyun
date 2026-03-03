@@ -3,411 +3,471 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Şair–Yazar Eşleştirme Oyunu</title>
+  <title>YKS Edebiyat • Şair–Yazar Oyunu</title>
+
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+
   <style>
     :root{
-      --bg:#0b1220;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(0,0,0,.18);
-      --text:#eaf0ff;
-      --muted:#b9c3dd;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius:16px;
-
-      --good: rgba(70, 200, 140, .18);
-      --bad:  rgba(255, 110, 110, .18);
+      --bg:#0b1220; --text:#eaf0ff; --muted:#b9c3dd; --border:rgba(255,255,255,.10);
+      --shadow: 0 12px 30px rgba(0,0,0,.35); --radius:16px;
+      --good: rgba(70, 200, 140, .18); --bad: rgba(255, 110, 110, .18);
       --accent: rgba(96,140,255,.65);
     }
-
-    *{ box-sizing:border-box; }
+    *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
       background:
         radial-gradient(1200px 800px at 10% 0%, rgba(90,120,255,.25), transparent 60%),
         radial-gradient(900px 600px at 90% 20%, rgba(0,220,180,.16), transparent 55%),
         var(--bg);
       color:var(--text);
     }
+    .container{max-width:980px;margin:0 auto;padding:18px 14px 40px}
+    .topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.4}
 
-    .container{
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 18px 14px 40px;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
-    }
-
-    h1{
-      margin:0;
-      font-size: 22px;
-      letter-spacing:.2px;
-    }
-    .subtitle{
-      margin-top:6px;
-      color:var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
-
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    button{
-      -webkit-tap-highlight-color: transparent;
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    button, select{
+      -webkit-tap-highlight-color:transparent;
       border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
       color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,.20);
-      transition: transform .06s ease, background .2s ease, border-color .2s ease;
-      user-select:none;
+      padding:10px 12px;border-radius:12px;cursor:pointer;
+      box-shadow:0 6px 16px rgba(0,0,0,.20);
+      transition:transform .06s ease,border-color .2s ease;
+      user-select:none;font-size:14px;
     }
-    button:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); }
-    button:active{ transform: translateY(0px); }
-
-    .primary{
-      background: linear-gradient(180deg, rgba(96,140,255,.65), rgba(96,140,255,.22));
-      border-color: rgba(96,140,255,.55);
-    }
-    .danger{
-      background: linear-gradient(180deg, rgba(255,110,110,.55), rgba(255,110,110,.18));
-      border-color: rgba(255,110,110,.45);
-    }
+    button:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.22)}
+    button:active{transform:translateY(0px)}
+    .primary{background:linear-gradient(180deg, rgba(96,140,255,.65), rgba(96,140,255,.22));border-color:rgba(96,140,255,.55)}
+    .danger{background:linear-gradient(180deg, rgba(255,110,110,.55), rgba(255,110,110,.18));border-color:rgba(255,110,110,.45)}
 
     .card{
       border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-top: 12px;
-      box-shadow: var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius:var(--radius);padding:16px;margin-top:12px;box-shadow:var(--shadow);
     }
-
-    .label{
-      font-weight: 800;
-      margin-bottom: 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
+    .label{font-weight:800;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border:1px solid var(--border);
-      background: var(--card2);
-      color: var(--muted);
-      font-weight: 650;
-      font-size: 12px;
-      white-space: nowrap;
+      display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
+      border:1px solid var(--border);background:rgba(0,0,0,.18);color:var(--muted);
+      font-weight:650;font-size:12px;white-space:nowrap
     }
+    .question{margin:0;line-height:1.55;font-size:16px;white-space:pre-wrap}
 
-    .question{
-      margin:0;
-      color: var(--text);
-      line-height: 1.55;
-      font-size: 16px;
-      white-space: pre-wrap;
-    }
-
-    .choices{
-      margin-top: 12px;
-      display:grid;
-      gap:10px;
-      grid-template-columns: 1fr 1fr;
-    }
-
+    .choices{margin-top:12px;display:grid;gap:10px;grid-template-columns:1fr 1fr}
     .choiceBtn{
-      text-align:left;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border:1px solid var(--border);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      box-shadow: 0 10px 20px rgba(0,0,0,.22);
-      width: 100%;
-      min-height: 52px;
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
+      text-align:left;padding:12px;border-radius:14px;border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      box-shadow:0 10px 20px rgba(0,0,0,.22);width:100%;min-height:54px;
+      display:flex;gap:10px;align-items:flex-start
     }
-
     .choiceKey{
-      width: 30px;
-      height: 30px;
-      border-radius: 10px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.16);
-      font-weight: 900;
-      flex: 0 0 auto;
+      width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+      border:1px solid var(--border);background:rgba(0,0,0,.16);font-weight:900;flex:0 0 auto
     }
-
-    .choiceText{
-      line-height: 1.35;
-      margin-top: 2px;
-      font-weight: 650;
-    }
-
-    .choiceBtn:hover{ border-color: rgba(255,255,255,.22); transform: translateY(-1px); }
-    .choiceBtn:active{ transform: translateY(0px); }
-
-    .choiceBtn.correct{
-      background: linear-gradient(180deg, rgba(70,200,140,.22), rgba(70,200,140,.10));
-      border-color: rgba(70,200,140,.55);
-    }
-    .choiceBtn.wrong{
-      background: linear-gradient(180deg, rgba(255,110,110,.22), rgba(255,110,110,.10));
-      border-color: rgba(255,110,110,.55);
-    }
+    .choiceText{line-height:1.35;margin-top:2px;font-weight:650}
+    .choiceBtn.correct{background:linear-gradient(180deg, rgba(70,200,140,.22), rgba(70,200,140,.10));border-color:rgba(70,200,140,.55)}
+    .choiceBtn.wrong{background:linear-gradient(180deg, rgba(255,110,110,.22), rgba(255,110,110,.10));border-color:rgba(255,110,110,.55)}
 
     .resultBox{
-      margin-top: 10px;
-      border:1px solid var(--border);
-      background: var(--card2);
-      border-radius: 14px;
-      padding: 12px;
-      white-space: pre-wrap;
-      line-height: 1.5;
-      color: var(--text);
-      font-size: 14px;
+      margin-top:10px;border:1px solid var(--border);background:rgba(0,0,0,.18);
+      border-radius:14px;padding:12px;white-space:pre-wrap;line-height:1.5;font-size:14px
     }
+    .resultBox.good{background:var(--good);border-color:rgba(70,200,140,.35)}
+    .resultBox.bad{background:var(--bad);border-color:rgba(255,110,110,.35)}
+    .scorebar{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+    .muted{color:var(--muted)}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .hidden{display:none}
 
-    .resultBox.good{ background: var(--good); border-color: rgba(70,200,140,.35); }
-    .resultBox.bad{ background: var(--bad); border-color: rgba(255,110,110,.35); }
-
-    .scorebar{
-      margin-top: 10px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .footerTips{
-      margin-top: 10px;
-      color: rgba(185,195,221,.9);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 640px){
-      h1{ font-size: 20px; }
-      .choices{ grid-template-columns: 1fr; }
-      .choiceBtn{ min-height: 54px; }
+    @media (max-width:640px){
+      .choices{grid-template-columns:1fr}
+      h1{font-size:18px}
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="topbar">
       <div>
-        <h1>Şair–Yazar Eşleştirme Oyunu</h1>
-        <div class="subtitle">TYT/AYT Edebiyat • Tek link • Dokunarak cevapla (klavye yok) • Mobil uyumlu</div>
+        <h1>YKS Edebiyat • Şair–Yazar Oyunu</h1>
+        <div class="subtitle">Dokunarak cevapla • Mod seç • Sınav modu (20 soru) • Yanlışlar + aralıklı tekrar • Offline (PWA)</div>
       </div>
-      <div class="pill" id="modePill">Mod: Tüm Sorular</div>
+      <div class="pill" id="modePill">Mod: Karma</div>
     </div>
 
     <div class="row">
+      <select id="modeSelect" aria-label="Mod seç">
+        <option value="mixed">Karma (dengeli)</option>
+        <option value="all">Tüm Sorular</option>
+        <option value="confusions">Karıştırılanlar</option>
+        <option value="wrong">Yanlışlar</option>
+        <option value="exam">Sınav (20 soru)</option>
+        <option value="Divan">Divan</option>
+        <option value="Halk">Halk</option>
+        <option value="Tanzimat">Tanzimat</option>
+        <option value="Servetifünun">Servetifünun</option>
+        <option value="Fecr-i Ati">Fecr-i Ati</option>
+        <option value="Milli Edebiyat">Milli Edebiyat</option>
+        <option value="Cumhuriyet">Cumhuriyet</option>
+      </select>
+
       <button id="start" class="primary">Başlat</button>
       <button id="next">Sonraki</button>
-      <button id="hint">İpucu</button>
-      <button id="wrong">Yanlışları Tekrar</button>
+      <button id="hint1">İpucu 1</button>
+      <button id="hint2">İpucu 2</button>
       <button id="reset" class="danger">Sıfırla</button>
     </div>
 
-    <div class="card">
+    <div class="card" id="quizCard">
       <div class="label">
         <span>Soru</span>
         <span class="pill" id="metaPill">—</span>
       </div>
       <p class="question" id="q">Başlat’a bas.</p>
       <div class="choices" id="choices"></div>
-    </div>
 
-    <div class="card">
-      <div class="label">
-        <span>Sonuç</span>
-        <span class="pill" id="progressPill">0 / 0</span>
-      </div>
       <div class="resultBox" id="result">Cevaplamak için şıklara dokun.</div>
 
       <div class="scorebar">
         <span class="pill">Doğru: <b id="cOk">0</b></span>
         <span class="pill">Yanlış: <b id="cBad">0</b></span>
         <span class="pill">Seri: <b id="cStreak">0</b></span>
+        <span class="pill">Soru: <b id="cCount">0</b></span>
+        <span class="pill" id="timerPill">Süre: 00:00</span>
       </div>
 
-      <div class="footerTips">
-        • İpucu kullanırsan soru “yarım puan” sayılır.  • Yanlışları tekrar modu, yanlış yaptığın soruları döndürür.
+      <div class="muted" style="margin-top:10px;font-size:12px;line-height:1.5">
+        • İpucu 1: Dönem (puan -0.25) • İpucu 2: 2 şık elenir (puan -0.5)<br/>
+        • Yanlışlar: 5 soru sonra tekrar + 1 gün sonra + 3 gün sonra otomatik tekrar
+      </div>
+    </div>
+
+    <div class="card hidden" id="resultCard">
+      <div class="label">
+        <span>Sınav Sonucu</span>
+        <span class="pill" id="examMeta">—</span>
+      </div>
+
+      <div class="grid2">
+        <div class="pill">Net (yaklaşık): <b id="examNet">—</b></div>
+        <div class="pill">Başarı: <b id="examRate">—</b></div>
+        <div class="pill">Doğru: <b id="examOk">—</b></div>
+        <div class="pill">Yanlış: <b id="examBad">—</b></div>
+        <div class="pill">Süre: <b id="examTime">—</b></div>
+        <div class="pill">Mod: <b id="examMode">—</b></div>
+      </div>
+
+      <div class="resultBox" id="examReview" style="margin-top:12px"></div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="examRetry" class="primary">Yanlışları Tekrar Çöz</button>
+        <button id="examAgain">Yeni Sınav</button>
       </div>
     </div>
   </div>
 
-  <!-- SORU BANKASI (API'siz) -->
   <script src="./questions.js"></script>
 
   <script>
-    const LS_KEY = "edebiyat_game_v2";
+    // ----------------------------
+    // Ayarlar
+    // ----------------------------
+    const LS_KEY = "yks_edebiyat_game_v3";
+    const AUTO_NEXT_MS = 1100;          // cevap sonrası otomatik geçiş
+    const SR_SOON_AFTER = 5;            // yanlış soru kaç soru sonra tekrar gelsin
+    const SR_DAY_1 = 1 * 24 * 60 * 60 * 1000;  // 1 gün
+    const SR_DAY_3 = 3 * 24 * 60 * 60 * 1000;  // 3 gün
+    const EXAM_COUNT = 20;
 
+    // Karıştırılanlar havuzu (en sık karışan yazar grupları)
+    const CONFUSION_AUTHORS = new Set([
+      "Halit Ziya Uşaklıgil","Mehmet Rauf","Tevfik Fikret","Cenap Şahabettin","Ahmet Haşim",
+      "Peyami Safa","Sabahattin Ali","Yakup Kadri Karaosmanoğlu","Reşat Nuri Güntekin","Halide Edip Adıvar",
+      "Orhan Veli","Cemal Süreya","Cahit Sıtkı Tarancı","Ahmet Hamdi Tanpınar"
+    ]);
+
+    // ----------------------------
+    // Helpers
+    // ----------------------------
     const el = (id)=>document.getElementById(id);
+    const now = ()=>Date.now();
 
-    let state = load() || freshState();
-    let current = null;       // soru objesi
-    let answered = false;     // aynı soruya 2 kez basılmasın
-    let hintUsed = false;
+    function load(){
+      try{ const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; }
+      catch(e){ return null; }
+    }
+    function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
 
-    function freshState(){
+    function fresh(){
       return {
+        mode: "mixed",
         correct: 0,
         wrong: 0,
         streak: 0,
-        total: 0,
+        count: 0,
+        lastId: null,
+        lastAuthor: null,
+
+        // spaced repetition schedule
+        // { id, dueAt }
+        due: [],
+
+        // wrong ids (for wrong mode)
         wrongIds: [],
-        mode: "all" // all | wrong
+
+        // hints
+        hint1Used: false,
+        hint2Used: false,
+
+        // exam
+        inExam: false,
+        exam: {
+          startAt: null,
+          qIndex: 0,
+          ok: 0,
+          bad: 0,
+          usedIds: [],
+          review: [] // {qText, correctAuthor, chosenAuthor, correct, explain, mnemonic}
+        },
+
+        // session
+        timerStart: null
       };
     }
 
-    function load(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){ return null; }
+    function pad2(n){ return String(n).padStart(2,"0"); }
+    function fmtTime(ms){
+      const s = Math.max(0, Math.floor(ms/1000));
+      const m = Math.floor(s/60);
+      const r = s%60;
+      return `${pad2(m)}:${pad2(r)}`;
     }
 
-    function save(){
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+      return arr;
     }
 
-    function setModePill(){
-      el("modePill").textContent = state.mode === "wrong" ? "Mod: Yanlışları Tekrar" : "Mod: Tüm Sorular";
+    function setModeLabel(){
+      const map = {
+        mixed:"Karma",
+        all:"Tüm Sorular",
+        confusions:"Karıştırılanlar",
+        wrong:"Yanlışlar",
+        exam:`Sınav (${EXAM_COUNT})`
+      };
+      el("modePill").textContent = `Mod: ${map[state.mode] || state.mode}`;
+      el("modeSelect").value = state.mode;
+    }
+
+    // ----------------------------
+    // Question transform: shuffle choices so correct isn't always A
+    // ----------------------------
+    function normalizeQuestion(q){
+      // q.choices: {A:"",B:"",C:"",D:""} q.answer: "A"...
+      const correctKey = q.answer;
+      const correctText = q.choices[correctKey];
+
+      const options = ["A","B","C","D"].map(k => ({text:q.choices[k], isCorrect:(k===correctKey)}));
+      shuffle(options);
+
+      const keys = ["A","B","C","D"];
+      const newChoices = {};
+      let newAnswerKey = "A";
+      keys.forEach((k, idx)=>{
+        newChoices[k] = options[idx].text;
+        if(options[idx].isCorrect) newAnswerKey = k;
+      });
+
+      return {
+        id: q.id,
+        period: q.period || "müfredat",
+        question: q.question,
+        choices: newChoices,
+        answer: newAnswerKey,
+        explain: q.explain || "",
+        mnemonic: q.mnemonic || "",
+        // for hint/confusion: correct author text
+        correctAuthor: correctText
+      };
+    }
+
+    // ----------------------------
+    // Pools
+    // ----------------------------
+    function allQuestions(){
+      return (window.QUESTIONS || []).map(normalizeQuestion);
+    }
+
+    function filterByMode(list){
+      if(state.mode === "all" || state.mode === "mixed" || state.mode === "exam") return list;
+
+      if(state.mode === "wrong"){
+        const set = new Set(state.wrongIds);
+        const filtered = list.filter(q => set.has(q.id));
+        return filtered.length ? filtered : list;
+      }
+
+      if(state.mode === "confusions"){
+        const filtered = list.filter(q => CONFUSION_AUTHORS.has(q.correctAuthor));
+        return filtered.length ? filtered : list;
+      }
+
+      // period
+      return list.filter(q => q.period === state.mode);
+    }
+
+    // Karma (mixed) dengesi: dönemleri sırayla döndür (basit round-robin)
+    const PERIOD_ORDER = ["Divan","Halk","Tanzimat","Servetifünun","Fecr-i Ati","Milli Edebiyat","Cumhuriyet"];
+    function mixedPick(list){
+      // hedef dönem: count'a göre döndür
+      const target = PERIOD_ORDER[state.count % PERIOD_ORDER.length];
+      const cand = list.filter(q => q.period === target);
+      return cand.length ? cand : list;
+    }
+
+    // ----------------------------
+    // Spaced repetition
+    // ----------------------------
+    function addDue(id, delayMs){
+      const dueAt = now() + delayMs;
+      state.due.push({id, dueAt});
+      // çok şişmesin
+      if(state.due.length > 200) state.due = state.due.slice(-200);
+    }
+
+    function popDueIfReady(){
+      const t = now();
+      // hazır due var mı?
+      const idx = state.due.findIndex(x => x.dueAt <= t);
+      if(idx === -1) return null;
+      const item = state.due.splice(idx,1)[0];
+      return item.id;
+    }
+
+    // ----------------------------
+    // Exam mode
+    // ----------------------------
+    function startExam(){
+      state.inExam = true;
+      state.mode = "exam";
+      state.exam = {
+        startAt: now(),
+        qIndex: 0,
+        ok: 0,
+        bad: 0,
+        usedIds: [],
+        review: []
+      };
+      save();
+      showQuiz();
+      nextQuestion(true);
+    }
+
+    function finishExam(){
+      state.inExam = false;
+      save();
+      showExamResult();
+    }
+
+    function showExamResult(){
+      el("quizCard").classList.add("hidden");
+      el("resultCard").classList.remove("hidden");
+
+      const ok = state.exam.ok;
+      const bad = state.exam.bad;
+      const net = (ok - bad/4).toFixed(2);
+      const rate = `${Math.round((ok / EXAM_COUNT) * 100)}%`;
+      const time = fmtTime(now() - state.exam.startAt);
+
+      el("examMeta").textContent = `20 Soru • ${time}`;
+      el("examNet").textContent = net;
+      el("examRate").textContent = rate;
+      el("examOk").textContent = ok;
+      el("examBad").textContent = bad;
+      el("examTime").textContent = time;
+      el("examMode").textContent = "Sınav";
+
+      // kısa özet
+      const wrongs = state.exam.review.filter(r=>!r.correct).slice(0,10);
+      let text = `Özet:\nDoğru: ${ok}  Yanlış: ${bad}  Net≈ ${net}\n\n`;
+      if(wrongs.length){
+        text += "İlk 10 yanlış:\n";
+        wrongs.forEach((r,i)=>{
+          text += `${i+1}) ${r.qText}\n   Doğru: ${r.correctAuthor}\n   Sen: ${r.chosenAuthor}\n   Not: ${r.explain}\n\n`;
+        });
+      } else {
+        text += "Harika! Bu sınavda yanlışın yok 🎯";
+      }
+      el("examReview").textContent = text;
+    }
+
+    function showQuiz(){
+      el("resultCard").classList.add("hidden");
+      el("quizCard").classList.remove("hidden");
+    }
+
+    // ----------------------------
+    // Rendering / State
+    // ----------------------------
+    let current = null;
+    let answered = false;
+
+    function resetHints(){
+      state.hint1Used = false;
+      state.hint2Used = false;
     }
 
     function renderScore(){
-      el("cOk").textContent = state.correct;
-      el("cBad").textContent = state.wrong;
+      el("cOk").textContent = state.inExam ? state.exam.ok : state.correct;
+      el("cBad").textContent = state.inExam ? state.exam.bad : state.wrong;
       el("cStreak").textContent = state.streak;
-      el("progressPill").textContent = `${state.correct + state.wrong} / ${state.total}`;
-      setModePill();
+      el("cCount").textContent = state.inExam ? `${state.exam.qIndex}/${EXAM_COUNT}` : state.count;
+      setModeLabel();
     }
 
-    function pool(){
-  const all = window.QUESTIONS || [];
-
-  if(state.mode === "wrong"){
-    return all.filter(q => state.wrongIds.includes(q.id));
-  }
-
-  if(state.mode !== "all"){
-    return all.filter(q => q.period === state.mode);
-  }
-
-  return all;
-}
-
-    function pickQuestion(){
-      const p = pool();
-      if(!p.length) return null;
-      // Son soru ile aynı olmasın:
-      const filtered = current ? p.filter(x => x.id !== current.id) : p;
-      const finalPool = filtered.length ? filtered : p;
-      return finalPool[Math.floor(Math.random() * finalPool.length)];
+    function setMetaPill(){
+      if(!current){ el("metaPill").textContent = "—"; return; }
+      const p = current.period || "müfredat";
+      el("metaPill").textContent = `#${current.id} • ${p}`;
     }
 
-    function resetChoiceStyles(){
-      const buttons = el("choices").querySelectorAll("button.choiceBtn");
-      buttons.forEach(b=>{
-        b.classList.remove("correct","wrong");
-        b.disabled = false;
-      });
-    }
-
-    function showQuestion(q){
-      current = q;
-      answered = false;
-      hintUsed = false;
-
-      el("q").textContent = q.question;
-
-      // meta pill: id + (varsa dönem bilgisi)
-      const period = q.period || q.tags?.period || "müfredat";
-      el("metaPill").textContent = `#${q.id} • ${period}`;
-
+    function renderChoices(q){
       const c = el("choices");
       c.innerHTML = "";
-
-      const keys = ["A","B","C","D"];
-      keys.forEach(k=>{
+      ["A","B","C","D"].forEach(k=>{
         const btn = document.createElement("button");
         btn.className = "choiceBtn";
         btn.type = "button";
-        btn.setAttribute("data-key", k);
-        btn.onclick = ()=> choose(k);
+        btn.dataset.key = k;
+        btn.onclick = ()=>choose(k);
 
-        const key = document.createElement("div");
-        key.className = "choiceKey";
-        key.textContent = k;
+        const kk = document.createElement("div");
+        kk.className = "choiceKey";
+        kk.textContent = k;
 
-        const text = document.createElement("div");
-        text.className = "choiceText";
-        text.textContent = q.choices[k];
+        const tx = document.createElement("div");
+        tx.className = "choiceText";
+        tx.textContent = q.choices[k];
 
-        btn.appendChild(key);
-        btn.appendChild(text);
+        btn.appendChild(kk);
+        btn.appendChild(tx);
         c.appendChild(btn);
       });
-
-      el("result").className = "resultBox";
-      el("result").textContent = "Cevaplamak için şıklara dokun.";
-
-      renderScore();
-    }
-
-    function start(){
-      state.mode = "all";
-      save();
-      const q = pickQuestion();
-      if(!q){
-        el("result").className = "resultBox bad";
-        el("result").textContent = "Soru bankası boş. questions.js içine soru eklemelisin.";
-        return;
-      }
-      showQuestion(q);
-    }
-
-    function next(){
-      const q = pickQuestion();
-      if(!q) return;
-      showQuestion(q);
-    }
-
-    function addWrong(id){
-      if(!state.wrongIds.includes(id)) state.wrongIds.push(id);
     }
 
     function lockChoices(){
-      const buttons = el("choices").querySelectorAll("button.choiceBtn");
-      buttons.forEach(b=> b.disabled = true);
+      el("choices").querySelectorAll("button.choiceBtn").forEach(b=>b.disabled=true);
     }
 
     function markChoice(key, cls){
@@ -415,106 +475,364 @@
       if(btn) btn.classList.add(cls);
     }
 
-    function choose(key){
-      if(!current) return;
-      if(answered) return;
+    function setResult(text, kind){
+      el("result").className = "resultBox" + (kind ? ` ${kind}` : "");
+      el("result").textContent = text;
+    }
 
+    // ----------------------------
+    // Picking next question
+    // ----------------------------
+    function nextQuestion(fromStart=false){
+      answered = false;
+      resetHints();
+
+      const all = allQuestions();
+      let list = filterByMode(all);
+
+      // exam: sadece 20 soru, tekrar olmasın
+      if(state.inExam){
+        list = list.filter(q => !state.exam.usedIds.includes(q.id));
+        if(!list.length){ finishExam(); return; }
+      }
+
+      // due question (spaced repetition) önce gelsin (exam dışında)
+      if(!state.inExam){
+        const dueId = popDueIfReady();
+        if(dueId){
+          const dueQ = all.find(q => q.id === dueId);
+          if(dueQ){
+            current = dueQ;
+            state.lastId = current.id;
+            state.lastAuthor = current.correctAuthor;
+            state.count += fromStart ? 0 : 1;
+            save();
+            showCurrent();
+            return;
+          }
+        }
+      }
+
+      // Karma dengesi
+      if(state.mode === "mixed" && !state.inExam){
+        list = mixedPick(list);
+      }
+
+      // anti-repeat: aynı soru ve aynı yazar üst üste gelmesin
+      const filtered = list.filter(q => q.id !== state.lastId && q.correctAuthor !== state.lastAuthor);
+      const pool = filtered.length ? filtered : list;
+      if(!pool.length){
+        setResult("Soru bulunamadı. questions.js içini kontrol et.", "bad");
+        return;
+      }
+
+      current = pool[Math.floor(Math.random() * pool.length)];
+
+      // exam bookkeeping
+      if(state.inExam){
+        state.exam.usedIds.push(current.id);
+        state.exam.qIndex += 1;
+      } else {
+        state.count += fromStart ? 0 : 1;
+      }
+
+      state.lastId = current.id;
+      state.lastAuthor = current.correctAuthor;
+      save();
+      showCurrent();
+    }
+
+    function showCurrent(){
+      showQuiz();
+      el("q").textContent = current.question;
+      setMetaPill();
+      renderChoices(current);
+      setResult("Cevaplamak için şıklara dokun.", "");
+      renderScore();
+    }
+
+    // ----------------------------
+    // Answering
+    // ----------------------------
+    function choose(key){
+      if(!current || answered) return;
       answered = true;
       lockChoices();
 
       const correctKey = current.answer;
-      state.total = window.QUESTIONS?.length || state.total;
+      const correctAuthor = current.choices[correctKey];
+      const chosenAuthor = current.choices[key];
 
-      if(key === correctKey){
-        state.correct += hintUsed ? 0.5 : 1;
+      // hint penalties (sınavda da geçerli)
+      const penalty = (state.hint2Used ? 0.5 : (state.hint1Used ? 0.25 : 0));
+
+      const ok = (key === correctKey);
+
+      if(ok){
+        if(state.inExam){
+          state.exam.ok += 1;
+        } else {
+          state.correct += (1 - penalty);
+        }
         state.streak += 1;
-
-        markChoice(key, "correct");
-
-        el("result").className = "resultBox good";
-        el("result").textContent =
-          `✅ Doğru\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`;
+        markChoice(key,"correct");
+        setResult(`✅ Doğru\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`, "good");
       } else {
-        state.wrong += 1;
+        if(state.inExam){
+          state.exam.bad += 1;
+        } else {
+          state.wrong += 1;
+        }
         state.streak = 0;
-        addWrong(current.id);
+        markChoice(key,"wrong");
+        markChoice(correctKey,"correct");
+        setResult(`❌ Yanlış\nDoğru: ${correctKey}) ${correctAuthor}\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`, "bad");
 
-        markChoice(key, "wrong");
-        markChoice(correctKey, "correct");
+        // wrong list
+        if(!state.wrongIds.includes(current.id)) state.wrongIds.push(current.id);
 
-        el("result").className = "resultBox bad";
-        el("result").textContent =
-          `❌ Yanlış\nDoğru: ${correctKey}) ${current.choices[correctKey]}\nAçıklama: ${current.explain}\nMnemonik: ${current.mnemonic}`;
+        // spaced repetition schedule (exam dışında da olsun)
+        addDue(current.id, SR_SOON_AFTER * 1000); // "5 soru sonra" yerine pratik: 5 sn değil; aşağıda daha doğru yapıyoruz
+        // Daha doğru: 5 soru sonra tekrar => "due" yerine sayaç bazlı da yapabiliriz ama basit ve stabil için:
+        // her yanlışta (5 soru sonra) tekrar: bunu count ile çözeceğiz:
+        addDue(current.id, 0); // hazır yap, aşağıdaki count gate ile 5 soru sonra getireceğiz
+
+        // 1 gün + 3 gün
+        addDue(current.id, SR_DAY_1);
+        addDue(current.id, SR_DAY_3);
+      }
+
+      // exam review
+      if(state.inExam){
+        state.exam.review.push({
+          qText: current.question,
+          correctAuthor,
+          chosenAuthor,
+          correct: ok,
+          explain: current.explain,
+          mnemonic: current.mnemonic
+        });
       }
 
       save();
       renderScore();
-      setTimeout(() => {
-  next();
-}, 1000);
-    }
 
-    function hint(){
-      if(!current) return;
-      if(answered) return;
-
-      if(hintUsed){
-        el("result").className = "resultBox";
-        el("result").textContent = "İpucu zaten kullanıldı.";
+      // exam ends?
+      if(state.inExam && state.exam.qIndex >= EXAM_COUNT){
+        setTimeout(()=>finishExam(), 650);
         return;
       }
-      hintUsed = true;
 
-      // Basit ipucu: dönem bilgisi + iki yanlış şık "zıt" dönem gibi hissettiren açıklama yok, sadece meta
-      const period = current.period || current.tags?.period || "müfredat";
-      el("result").className = "resultBox";
-      el("result").textContent = `💡 İpucu: Dönem/Akım → ${period}\n(Not: Bu soru yarım puan sayılır.)`;
+      // auto next
+      setTimeout(()=>nextQuestion(false), AUTO_NEXT_MS);
     }
 
-    function wrongMode(){
-      state.mode = "wrong";
+    // ----------------------------
+    // Hints (2-stage)
+    // ----------------------------
+    function hint1(){
+      if(!current || answered) return;
+      if(state.hint1Used){
+        setResult("İpucu 1 zaten kullanıldı.", "");
+        return;
+      }
+      state.hint1Used = true;
       save();
-      const q = pickQuestion();
-      if(!q){
-        el("result").className = "resultBox bad";
-        el("result").textContent = "Yanlış soru yok (ya da soru bankası boş).";
-        return;
-      }
-      showQuestion(q);
+      setResult(`💡 İpucu 1: Dönem/Akım → ${current.period}\n(Not: Bu soru -0.25 puan)`, "");
     }
 
-    function resetAll(){
+    function hint2(){
+      if(!current || answered) return;
+      if(state.hint2Used){
+        setResult("İpucu 2 zaten kullanıldı.", "");
+        return;
+      }
+      state.hint2Used = true;
+      state.hint1Used = true; // 2. ipucu alındıysa 1 de alınmış sayalım
+      save();
+
+      // İki yanlış şıkkı ele: correct olmayanlardan 2 tanesini disable et
+      const correctKey = current.answer;
+      const wrongKeys = ["A","B","C","D"].filter(k => k !== correctKey);
+      shuffle(wrongKeys);
+      const toEliminate = wrongKeys.slice(0,2);
+
+      toEliminate.forEach(k=>{
+        const btn = el("choices").querySelector(`button.choiceBtn[data-key="${k}"]`);
+        if(btn){
+          btn.disabled = true;
+          btn.style.opacity = "0.55";
+        }
+      });
+
+      setResult(`💡 İpucu 2: 2 şık elendi.\n(Not: Bu soru -0.5 puan)`, "");
+    }
+
+    // ----------------------------
+    // Reset / Start / Mode change
+    // ----------------------------
+    function hardReset(){
       localStorage.removeItem(LS_KEY);
-      state = freshState();
+      state = fresh();
       current = null;
       answered = false;
-      hintUsed = false;
-
+      setModeLabel();
       el("q").textContent = "Başlat’a bas.";
       el("choices").innerHTML = "";
-      el("metaPill").textContent = "—";
-      el("result").className = "resultBox";
-      el("result").textContent = "Cevaplamak için şıklara dokun.";
+      setResult("Cevaplamak için şıklara dokun.", "");
+      renderScore();
+      showQuiz();
+      save();
+    }
 
+    function start(){
+      // timer start
+      state.timerStart = now();
+      if(state.mode === "exam"){
+        startExam();
+        return;
+      }
+      state.inExam = false;
+      save();
+      nextQuestion(true);
+    }
+
+    function next(){
+      if(state.mode === "exam"){
+        // sınavda "sonraki" butonu: cevapsız geçmek gibi olmasın
+        setResult("Sınavda önce cevapla. (Cevaplayınca otomatik geçer)", "");
+        return;
+      }
+      nextQuestion(false);
+    }
+
+    function changeMode(m){
+      state.mode = m;
+      state.inExam = false;
+      save();
+      setModeLabel();
+
+      if(m === "exam"){
+        setResult(`Sınav modu: ${EXAM_COUNT} soru. Başlat’a basınca sınav başlar.`, "");
+      } else if(m === "wrong"){
+        setResult("Yanlışlar modu: yanlış yaptığın sorular döner. Başlat’a bas.", "");
+      } else if(m === "confusions"){
+        setResult("Karıştırılanlar modu: en çok karışan yazar-eserler. Başlat’a bas.", "");
+      } else if(m === "mixed"){
+        setResult("Karma modu: dönemleri dengeli karıştırır. Başlat’a bas.", "");
+      } else if(m === "all"){
+        setResult("Tüm sorular: tüm havuz karışık. Başlat’a bas.", "");
+      } else {
+        setResult(`${m} modu: sadece ${m} soruları. Başlat’a bas.`, "");
+      }
+
+      // yeni modda hemen soru istemezse kullanıcı başlatır
+      el("q").textContent = "Başlat’a bas.";
+      el("choices").innerHTML = "";
       save();
       renderScore();
     }
 
-    // init
-    if(!state || typeof state !== "object") state = freshState();
-    state.total = window.QUESTIONS?.length || state.total || 0;
-    save();
-    renderScore();
-    setModePill();
+    // ----------------------------
+    // Timer UI
+    // ----------------------------
+    function tick(){
+      const base = state.inExam ? state.exam.startAt : state.timerStart;
+      if(base){
+        el("timerPill").textContent = `Süre: ${fmtTime(now() - base)}`;
+      } else {
+        el("timerPill").textContent = "Süre: 00:00";
+      }
+      requestAnimationFrame(tick);
+    }
 
-    // buttons
+    // ----------------------------
+    // "5 soru sonra tekrar"ı daha doğru yapmak:
+    // Yanlış olduğunda due(0) ekledik. Bunu "count bazlı" çalıştıracağız.
+    // Basit çözüm: her soruda, dueAt<=now olan id varsa ama sadece
+    // (state.count - lastWrongCount >= 5) gibi... Bunun için per-id sayaç tutalım.
+    // ----------------------------
+    function addDueCountGate(id){
+      // id 5 soru sonra gelsin diye "count target" ekle
+      state.due.push({id, dueAt: now(), dueCount: state.count + SR_SOON_AFTER});
+      if(state.due.length > 200) state.due = state.due.slice(-200);
+    }
+    // override: wrong olduğunda countGate ekleyeceğiz
+    // küçük patch: choose içinde wrong olduğunda addDueCountGate çağıracağız
+    // bunu yapmak için aşağıda küçük bir runtime patch:
+    const _choose = choose;
+    choose = function(key){
+      const beforeWrong = (!answered && current) ? (key !== current.answer) : false;
+      _choose(key);
+      if(beforeWrong){
+        // count gate ekle
+        addDueCountGate(current.id);
+        save();
+      }
+    }
+
+    // popDueIfReady güncelle: dueCount varsa count'a göre kontrol et
+    const _pop = popDueIfReady;
+    popDueIfReady = function(){
+      const t = now();
+      const idx = state.due.findIndex(x => (x.dueCount !== undefined ? state.count >= x.dueCount : x.dueAt <= t));
+      if(idx === -1) return null;
+      const item = state.due.splice(idx,1)[0];
+      return item.id;
+    }
+
+    // ----------------------------
+    // PWA SW register
+    // ----------------------------
+    async function registerSW(){
+      try{
+        if("serviceWorker" in navigator){
+          await navigator.serviceWorker.register("/sw.js");
+        }
+      }catch(e){}
+    }
+
+    // ----------------------------
+    // Init
+    // ----------------------------
+    let state = load() || fresh();
+    setModeLabel();
+    renderScore();
+    tick();
+    registerSW();
+
+    // UI events
     el("start").onclick = start;
     el("next").onclick = next;
-    el("hint").onclick = hint;
-    el("wrong").onclick = wrongMode;
-    el("reset").onclick = resetAll;
+    el("hint1").onclick = hint1;
+    el("hint2").onclick = hint2;
+    el("reset").onclick = hardReset;
+    el("modeSelect").onchange = (e)=>changeMode(e.target.value);
+
+    // Exam buttons
+    el("examRetry").onclick = ()=>{
+      // yanlışları tekrar moduna al
+      state.mode = "wrong";
+      state.inExam = false;
+      save();
+      setModeLabel();
+      showQuiz();
+      start();
+    };
+    el("examAgain").onclick = ()=>{
+      state.mode = "exam";
+      state.inExam = false;
+      save();
+      setModeLabel();
+      showQuiz();
+      startExam();
+    };
+
+    // First message
+    changeMode(state.mode || "mixed");
   </script>
 </body>
 </html>
+
 
 
