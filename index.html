@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Şair–Yazar Eşleştirme Oyunu</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:20px;max-width:760px}
+    button{padding:10px 12px;margin:6px 6px 6px 0}
+    .card{border:1px solid #ddd;border-radius:10px;padding:14px;margin-top:12px}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input{padding:10px;font-size:16px;width:120px}
+    pre{white-space:pre-wrap}
+  </style>
+</head>
+<body>
+  <h2>Şair–Yazar Eşleştirme Oyunu (API’siz)</h2>
+
+  <div class="row">
+    <button id="start">Başlat</button>
+    <button id="next">Sonraki</button>
+    <button id="wrong">Yanlışları Tekrar</button>
+    <button id="reset">Sıfırla</button>
+  </div>
+
+  <div class="card">
+    <div><b>Soru:</b></div>
+    <pre id="q">Başlat’a bas.</pre>
+    <div id="choices"></div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="ans" placeholder="A/B/C/D" />
+      <button id="check">Kontrol Et</button>
+    </div>
+    <pre id="result"></pre>
+    <div><b>Skor:</b> <span id="score">0 doğru / 0 yanlış</span> | <b>Seri:</b> <span id="streak">0</span></div>
+  </div>
+
+  <script src="./questions.js"></script>
+  <script>
+    const LS_KEY = "edebiyat_game_v1";
+    let state = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+
+    function initState(){
+      state = {
+        correct: 0,
+        wrong: 0,
+        streak: 0,
+        currentId: null,
+        wrongIds: [],
+        mode: "all" // all | wrong
+      };
+      save();
+    }
+
+    function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+    function renderScore(){
+      document.getElementById("score").textContent = `${state.correct} doğru / ${state.wrong} yanlış`;
+      document.getElementById("streak").textContent = `${state.streak}`;
+    }
+
+    function getPool(){
+      if(state.mode === "wrong"){
+        const pool = window.QUESTIONS.filter(q => state.wrongIds.includes(q.id));
+        return pool.length ? pool : window.QUESTIONS;
+      }
+      return window.QUESTIONS;
+    }
+
+    function pickQuestion(){
+      const pool = getPool();
+      // Son soruyu tekrar seçmemek için basit filtre
+      const filtered = pool.filter(q => q.id !== state.currentId);
+      const finalPool = filtered.length ? filtered : pool;
+      return finalPool[Math.floor(Math.random() * finalPool.length)];
+    }
+
+    function showQuestion(q){
+      state.currentId = q.id; save();
+      document.getElementById("q").textContent = q.question;
+      const c = document.getElementById("choices");
+      c.innerHTML = "";
+      ["A","B","C","D"].forEach(k=>{
+        const div = document.createElement("div");
+        div.textContent = `${k}) ${q.choices[k]}`;
+        c.appendChild(div);
+      });
+      document.getElementById("ans").value = "";
+      document.getElementById("result").textContent = "";
+      renderScore();
+    }
+
+    function currentQuestion(){
+      return window.QUESTIONS.find(q => q.id === state.currentId);
+    }
+
+    function start(){
+      if(!state.correct && !state.wrong && !state.currentId) {
+        // yepyeni
+      }
+      const q = pickQuestion();
+      showQuestion(q);
+    }
+
+    function next(){
+      const q = pickQuestion();
+      showQuestion(q);
+    }
+
+    function check(){
+      const q = currentQuestion();
+      if(!q) return;
+
+      const choice = document.getElementById("ans").value.trim().toUpperCase();
+      if(!["A","B","C","D"].includes(choice)){
+        document.getElementById("result").textContent = "A/B/C/D gir.";
+        return;
+      }
+
+      if(choice === q.answer){
+        state.correct += 1;
+        state.streak += 1;
+        document.getElementById("result").textContent =
+          `✅ Doğru\nAçıklama: ${q.explain}\nMnemonik: ${q.mnemonic}`;
+      } else {
+        state.wrong += 1;
+        state.streak = 0;
+        if(!state.wrongIds.includes(q.id)) state.wrongIds.push(q.id);
+        document.getElementById("result").textContent =
+          `❌ Yanlış\nDoğru: ${q.answer}) ${q.choices[q.answer]}\nAçıklama: ${q.explain}\nMnemonik: ${q.mnemonic}`;
+      }
+      save();
+      renderScore();
+    }
+
+    function wrongMode(){
+      state.mode = "wrong"; save();
+      start();
+      document.getElementById("result").textContent = "Yanlışları tekrar moduna geçildi.";
+    }
+
+    function resetAll(){
+      localStorage.removeItem(LS_KEY);
+      initState();
+      document.getElementById("q").textContent = "Başlat’a bas.";
+      document.getElementById("choices").innerHTML = "";
+      document.getElementById("result").textContent = "";
+      renderScore();
+    }
+
+    // init
+    if(!state || typeof state !== "object" || state.correct === undefined) initState();
+    renderScore();
+
+    document.getElementById("start").onclick = ()=>{ state.mode="all"; save(); start(); };
+    document.getElementById("next").onclick = next;
+    document.getElementById("check").onclick = check;
+    document.getElementById("wrong").onclick = wrongMode;
+    document.getElementById("reset").onclick = resetAll;
+  </script>
+</body>
+</html>
